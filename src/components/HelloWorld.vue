@@ -3,10 +3,18 @@
     <h1>{{ msg }}</h1>
     <hr>
     <div>
-      <h1>Contador</h1>
+      <h1>Contador con ref()</h1>
       <h2 class="counter">{{ counter }}</h2>
-      <button class="btn-primary" @click="decrement">-</button>
-      <button class="btn-primary" @click="increment">+</button>
+      <h3>{{ duplicarContador }}</h3>
+      <button class="btn-primary" @click="decrement"> - </button>
+      <button class="btn-primary" @click="counter++"> + </button>
+    </div>
+    <hr>
+    <div>
+      <h1>Contador con state - reactive</h1>
+      <h2 class="counter">{{ state.count }}</h2>
+      <button class="btn-primary" @click="decrementStateCount"> - </button>
+      <button class="btn-primary" @click="incrementStateCount"> + </button>
     </div>
     <hr>
     <div>
@@ -21,24 +29,34 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
   },
   setup () {
+    // otra forma de definir variables reactivas, en este caso dentro del estado
+    const state = reactive({
+      count: 0
+    })
+    // const { count } = state
+
     // Creando variables reactivas
     const counter = ref( 0 )
     const nombre = ref( '' )
 
     // Funciones o métodos
-    const increment = () => {
-      counter.value++
-    }
-
     const decrement = () => {
       counter.value--
+    }
+
+    const incrementStateCount = () => {
+      state.count++
+    }
+
+    const decrementStateCount = () => {
+      state.count--
     }
 
     const setNombre = () => {
@@ -48,18 +66,32 @@ export default {
       counter.value = 10
     }
 
+    // computed properties
+    // twiceCounter
+    const duplicarContador = computed( () => counter.value * 2 );
+
     // Asignando datos de entrada al montar el componente
-    onMounted(setNombre)
-    onMounted(setCounter)
+    onMounted( setNombre )
+    onMounted( setCounter )
+
+    // watch
+    watch( counter, ( newVal, oldVal ) => {
+      console.log( 'oldVal :: ', oldVal );
+      console.log( 'El nuevo valor del contador es :: ', newVal );
+    })
 
 
     return {
       // variables reactivas
+      state,
       counter,
       nombre,
+      // computed properties
+      duplicarContador,
       // funciones
-      increment,
       decrement,
+      incrementStateCount,
+      decrementStateCount
     }
   }
 }
